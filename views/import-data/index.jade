@@ -1,0 +1,19 @@
+// расширяем базовый шаблон блоками
+extends ../index
+// блок верстки в body
+block body_layout
+    .container
+        .row
+            .col-md-12
+                // импорт формы загрузки файла с данными на сервер
+                import upload-form
+        .row
+            .col-md-12
+                // импорт формы запроса удаления случайных записей
+                import delete-random-data-form
+        .row
+            .col-md-12
+                // импорт верстки отображения загруженных данных
+                import view-data-form
+// блок подключения скриптов в конце тега body
+block body_scripts

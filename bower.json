@@ -1,0 +1,16 @@
+{
+  "name": "sport-data",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "Evgeniy Bazhenov"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "backbone": "~1.2.3"
+  }
+}
