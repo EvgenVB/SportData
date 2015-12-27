@@ -1,3 +1,4 @@
+
 module.exports = grunt => {
     require('load-grunt-tasks')(grunt);
 
@@ -8,6 +9,9 @@ module.exports = grunt => {
                 cssDest: 'public/css/third-party.css',
                 mainFiles: {
                     bootstrap: ['dist/css/bootstrap.css']
+                },
+                dependencies: {
+                    'underscore': 'jquery'
                 }
 
             }
@@ -38,11 +42,16 @@ module.exports = grunt => {
             bs_fonts: {
                 files: [{expand: true, cwd: 'bower_components/bootstrap/dist/fonts/', src: ['*'], dest: 'public/fonts/', filter: 'isFile'}]
             }
-        }});
+        },
+        sequelize: {
+            options: {
+                migrationsPath: 'db/migrations',
+                config: JSON.stringify(require('./config/app').db)
+            }
+        }
+    });
 
-
-
-    grunt.registerTask('buildbower', [
+    grunt.registerTask('build', [
         'bower_concat',
         'uglify:bower',
         'cssmin',

@@ -7,12 +7,23 @@ head
     meta(name='author', content='')
     link(rel='icon', href='/favicon.ico')
     title Sport data
+
+    link(href="/css/third-party.min.css", rel="stylesheet")
     // блок ссылок на css ресурсы в header
     block header_css_links
+
     // блок ссылок на js ресурсы в header
     block header_scripts
 body
     // блок разметки в body
     block body_layout
+
+    script(src="/js/third-party.js")
+    script(src="/js/app/context.js")
+    script(src="/js/app/app.js")
+    script(type="text/javascript").
+        $(document).ready(function () {
+            var app = new SportData.Application();
+        });
     // блок ссылок на js ресурсы в body
     block body_scripts

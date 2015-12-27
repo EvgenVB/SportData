@@ -1,15 +1,15 @@
-const fs = require('fs');
-const zlib = require('zlib');
 // Конфигурация приложения
-const config = require('./config');
+var config = require('./config/app');
+config.db.models = require('./.sequelizerc')['models-path'];
+
 // HTTP маршруты
-const routes = require('./api/routes');
+var routes = require('./api');
 
 // "Класс" - обертка koa
-const Server = require('./lib/sport-data-server').SportDataServer;
+var Server = require('./lib/sport-data-server').SportDataServer;
 
 // Создаем и запускаем новый сервер
-const server = new Server(config, routes);
+var server = new Server(config, routes);
 server.start().then(function() {
     console.log('started');
 }).catch(function(error) {

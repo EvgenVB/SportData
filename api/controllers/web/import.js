@@ -1,4 +1,4 @@
-exports.index = function *() {
-    console.log(this.logger);
+exports.index = function *(next) {
     this.render('import-data/index', {}, true);
+    yield next;
 };

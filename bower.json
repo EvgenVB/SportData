@@ -10,7 +10,9 @@
   "homepage": "",
   "private": true,
   "dependencies": {
+    "jquery": "~2.1.4",
     "bootstrap": "~3.3.6",
-    "backbone": "~1.2.3"
+    "backbone": "~1.2.3",
+    "dropzone": "~4.2.0"
   }
 }
