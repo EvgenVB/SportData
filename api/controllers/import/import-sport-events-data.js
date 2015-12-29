@@ -14,37 +14,45 @@ exports.upload = function *(next) {
     var teams, teamIndex, teamCount, team, checkTeam;
     var location, checkLocation;
     var scores, score;
-    var size = this.request.header['content-length'];
 
     // кеши справочников конечно можно подгружать в начале сессии импорта, или вообще держать в памяти,
     // контекст использования этого приложения не виден из задачи, чтобы принять такое решение.
     // так что кеши тут локальные, на сессию импорта
     var teamsCache = {}, locationsCache = {};
+
+    // Объект статистики для отправки состояния импорта по вебсокету
     var statistic = {
         doneCount: 0,
         insertedCount: 0
     };
     // если неподходящий формат body выходим
-    if (!this.request.is('multipart/*')) return yield next;
+    if (!this.request.is('multipart/*')) {
+        this.throw(400, 'Request content-type must be multipart/*');
+        yield next;
+    }
 
-    // если подходящий, получаем итератор POST параметров
-    parts = bodyParser(this, {
-        // только .gz
-        checkFile: function (fieldname, file, filename) {
-            if (path.extname(filename) !== '.gz') {
-                var err = new Error('Allow .gz files only');
-                err.status = 400;
-                return err
+    try {
+        // если подходящий, получаем итератор POST параметров
+        parts = bodyParser(this, {
+            // только .gz
+            checkFile: function (fieldname, file, filename) {
+                if (path.extname(filename) !== '.gz') {
+                    var error = new Error('Allow .gz files only');
+                    error.status = 400;
+                    return error
+                }
             }
-        }
-    });
+        });
+    } catch (error) {
+        this.throw(400, error.message);
+        yield next;
+    }
 
     // перебираем POST параметры
     while (part = yield parts) {
         // ищем подходящий файл на загрузку
         if (typeof part === 'object'
             && part.constructor.name === 'FileStream') {
-
             // инстанцируем интервально прерываемый поточный парсер и передаем в него ссылку на поток,
             // согласно условиям задачи интервал прерывания - 10 объектов события
             var parser = new fileParser(part, 10);
@@ -123,12 +131,15 @@ exports.upload = function *(next) {
                 this.io.users[this.session.ioSID].emit('import-progress', {state: 'DONE', statistic: statistic});
                 yield next;
             } catch (error) {
-                this.io.users[this.session.ioSID].emit('import-progress', {state: 'ERROR', statistic: statistic, message: 'File is broken'});
-                this.throw(422, 'File is broken');
+                this.io.users[this.session.ioSID].emit('import-progress', {state: 'ERROR', statistic: statistic, message: 'File parse error'});
+                this.throw(422, 'File parse error');
                 yield next;
             }
         }
     }
+
+    this.throw(400, 'No import file was found in request');
+    yield next;
 };
 
 
