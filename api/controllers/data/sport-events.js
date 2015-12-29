@@ -13,7 +13,6 @@ exports.removeRandomData = function *(next) {
         var percentage = parseInt(params.percentage, 10) || 0;
         var result = yield this.db.Event.removeRandomCount(percentage);
         var rows = result[0];
-        console.log(rows['0'].deleted);
         if (rows['0'] && rows['0'].deleted > 0) {
             this.body = {deleted: rows['0'].deleted};
         } else {
