@@ -120,10 +120,10 @@ exports.upload = function *(next) {
                 }
                 this.status = 200;
                 this.body = 'done';
-                this.io.emit('import-progress', {state: 'DONE', statistic: statistic});
+                this.io.users[this.session.ioSID].emit('import-progress', {state: 'DONE', statistic: statistic});
                 yield next;
             } catch (error) {
-                this.io.emit('import-progress', {state: 'ERROR', statistic: statistic, message: 'File is broken'});
+                this.io.users[this.session.ioSID].emit('import-progress', {state: 'ERROR', statistic: statistic, message: 'File is broken'});
                 this.throw(422, 'File is broken');
                 yield next;
             }
