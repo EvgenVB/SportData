@@ -122,17 +122,33 @@ exports.upload = function *(next) {
                         statistic.doneCount++;
                     }
 
-                    this.io.users[this.session.ioSID].emit('import-progress', {state: 'PROGRESS', statistic: statistic});
+                    if (this.io.users.hasOwnProperty(this.session.ioSID)) {
+                        this.io.users[this.session.ioSID].emit('import-progress', {
+                            state: 'PROGRESS',
+                            statistic: statistic
+                        });
+                    }
+
                     // согласно условиям задачи, нужно прерваться на 300мс на каждые 10 обработанных записей
                     yield function(callback) {setTimeout(callback,300);}
                 }
                 this.status = 200;
                 this.body = 'done';
-                this.io.users[this.session.ioSID].emit('import-progress', {state: 'DONE', statistic: statistic});
+                if (this.io.users.hasOwnProperty(this.session.ioSID)) {
+                    this.io.users[this.session.ioSID].emit('import-progress', {state: 'DONE', statistic: statistic});
+                }
                 yield next;
             } catch (error) {
-                this.io.users[this.session.ioSID].emit('import-progress', {state: 'ERROR', statistic: statistic, message: 'File parse error'});
-                this.throw(422, 'File parse error');
+                var message;
+                if (error.constructor.name === "Array") {
+                    message = '\n' + error.map(function(error) { return error.message}).join(',\n');
+                } else {
+                    message = error.message;
+                }
+                if (this.io.users.hasOwnProperty(this.session.ioSID)) {
+                    this.io.users[this.session.ioSID].emit('import-progress', {state: 'ERROR', statistic: statistic, message: 'File parse error: '+message});
+                }
+                this.throw(422, 'File parse error: '+message);
                 yield next;
             }
         }
