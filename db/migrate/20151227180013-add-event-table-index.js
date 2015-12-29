@@ -10,6 +10,6 @@ module.exports = {
     },
 
     down: function (queryInterface, Sequelize) {
-         return queryInterface.removeIndex('locations', 'idx_events_random_value');
+         return ;
     }
 };

@@ -4,12 +4,10 @@ extends ../index
 block body_layout
     .container
         .row
-            .col-md-12
-                h3 Upload gzipped data
+            .col-md-6
                 // импорт формы загрузки файла с данными на сервер
                 include upload-form
-        .row
-            .col-md-12
+            .col-md-6
                 // импорт формы запроса удаления случайных записей
                 include delete-random-data-form
         .row

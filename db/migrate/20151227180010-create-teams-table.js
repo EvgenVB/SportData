@@ -5,14 +5,17 @@ module.exports = {
         return queryInterface.createTable('teams', {
             id: {
                 type: Sequelize.INTEGER,
-                autoIncrement: true,
                 primaryKey: true
             },
             caption: {
                 type: Sequelize.STRING(255)
             },
             location_id: {
-                type: Sequelize.INTEGER
+                type: Sequelize.INTEGER,
+                references: 'locations',
+                referencesKey: 'id',
+                onDelete: 'SET NULL',
+                onUpdate: 'CASCADE'
             }
         }, {
             timestamps: false,

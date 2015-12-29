@@ -1,0 +1,16 @@
+#grid.panel.panel-default
+    .panel-heading
+        h3.panel-title Sport events data grid
+    .panel-body
+        .row
+            .col-lg-12
+                button.refresh-grid-btn.btn.btn-info
+                    i.glyphicon.glyphicon-refresh
+        .row
+            .col-lg-12.paginator-layout.text-center
+        .row
+            .col-lg-12.events-data-grid-layout
+        .row
+            .col-lg-12.paginator-layout.text-center
+script#events-grid-template(type="text/template")
+    include templates/events-grid.jade

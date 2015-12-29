@@ -1,52 +1,16 @@
 window.SportData.Application = Backbone.View.extend({
     initialize: function() {
-        // Get the template HTML and remove it from the doument
-        var previewNode = document.querySelector("#template");
-        previewNode.id = "";
-        var previewTemplate = previewNode.parentNode.innerHTML;
-        previewNode.parentNode.removeChild(previewNode);
-
-        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-            url: "http://www.torrentplease.com/dropzone.php", // Set the url
-            thumbnailWidth: 80,
-            thumbnailHeight: 80,
-            parallelUploads: 20,
-            previewTemplate: previewTemplate,
-            autoQueue: false, // Make sure the files aren't queued until manually added
-            previewsContainer: "#previews", // Define the container to display the previews
-            clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
+        var uploadStateModel = new Backbone.Model({state: 'NONE', statistics: {}});
+        new SportData.views.UploadImportData({el: document.querySelector('#upload'), model: uploadStateModel});
+        new SportData.views.RemoveRandomEventsData({el: document.querySelector('#remove')});
+        new SportData.views.EventsGridView({el: document.querySelector('#grid'), collection: new SportData.models.EventRowCollection});
+        var socket = io.connect('http://localhost:3000');
+        socket.on('connect', function(){
+            console.log('connect');
+            socket.emit('register', {ioSID: window.ioSID});
         });
-
-        myDropzone.on("addedfile", function(file) {
-            // Hookup the start button
-            file.previewElement.querySelector(".start").onclick = function() { myDropzone.enqueueFile(file); };
+        socket.on('import-progress', function (data) {
+            uploadStateModel.set(data);
         });
-
-        // Update the total progress bar
-        myDropzone.on("totaluploadprogress", function(progress) {
-            document.querySelector("#total-progress .progress-bar").style.width = progress + "%";
-        });
-
-        myDropzone.on("sending", function(file) {
-            // Show the total progress bar when upload starts
-            document.querySelector("#total-progress").style.opacity = "1";
-            // And disable the start button
-            file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
-        });
-
-        // Hide the total progress bar when nothing's uploading anymore
-        myDropzone.on("queuecomplete", function(progress) {
-            document.querySelector("#total-progress").style.opacity = "0";
-        });
-
-        // Setup the buttons for all transfers
-        // The "add files" button doesn't need to be setup because the config
-        // `clickable` has already been specified.
-        document.querySelector("#actions .start").onclick = function() {
-            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
-        };
-        document.querySelector("#actions .cancel").onclick = function() {
-            myDropzone.removeAllFiles(true);
-        };
     }
 });

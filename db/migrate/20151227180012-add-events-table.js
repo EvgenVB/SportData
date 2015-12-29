@@ -5,7 +5,6 @@ module.exports = {
         return queryInterface.createTable('events', {
             id: {
                 type: Sequelize.INTEGER,
-                autoIncrement: true,
                 primaryKey: true
             },
             date: {

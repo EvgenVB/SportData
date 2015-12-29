@@ -11,7 +11,10 @@ module.exports = grunt => {
                     bootstrap: ['dist/css/bootstrap.css']
                 },
                 dependencies: {
-                    'underscore': 'jquery'
+                    'underscore': ['jquery','moment'],
+                    'backbone': 'underscore',
+                    'dropzone': 'bootstrap',
+                    'bootpag': 'bootstrap'
                 }
 
             }
@@ -41,12 +44,6 @@ module.exports = grunt => {
         copy: {
             bs_fonts: {
                 files: [{expand: true, cwd: 'bower_components/bootstrap/dist/fonts/', src: ['*'], dest: 'public/fonts/', filter: 'isFile'}]
-            }
-        },
-        sequelize: {
-            options: {
-                migrationsPath: 'db/migrations',
-                config: JSON.stringify(require('./config/app').db)
             }
         }
     });

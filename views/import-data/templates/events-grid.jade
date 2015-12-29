@@ -1,0 +1,13 @@
+table.table.table-striped
+    thead
+        tr
+            th #
+            th Teams
+            th Score
+            th Date
+    tbody <% _.each( data, function(event){ %>
+        tr
+          td <%- event.id %>
+          td <%- event.scores[0].team.caption %> - <%- event.scores[1].team.caption %>
+          td <%- event.scores[0].value %>:<%- event.scores[1].value %>
+          td <%- moment(event.date).format('DD-MM-YYYY HH:mm') %>  <% }); %>

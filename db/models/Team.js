@@ -2,7 +2,8 @@
 module.exports = function(sequelize, DataTypes) {
     var Team = sequelize.define('Team', {
         id: {type: DataTypes.INTEGER, primaryKey: true},
-        caption: DataTypes.STRING
+        caption: DataTypes.STRING,
+        location_id: DataTypes.INTEGER
     }, {
         timestamps: false,
         underscored: true,
@@ -10,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
         classMethods: {
             associate: function(models) {
                 // Foreign key для связи Города --* Команды
-                this.hasOne(models.Location, {
+                this.belongsTo(models.Location, {
                     foreignKey: 'location_id',
                     as: 'location',
                     constraints: true,
@@ -30,6 +31,9 @@ module.exports = function(sequelize, DataTypes) {
                     onDelete: 'SET NULL',
                     onUpdate: 'CASCADE'
                 });
+            },
+            insertIgnore: function(data) {
+                return sequelize.query('INSERT IGNORE INTO teams (id, caption, location_id) VALUES (:id, :name, :location_id)', {replacements: data});
             }
         }
     });

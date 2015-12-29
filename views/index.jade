@@ -21,7 +21,16 @@ body
     script(src="/js/third-party.js")
     script(src="/js/app/context.js")
     script(src="/js/app/app.js")
+
+    script(src="/js/app/models/EventRow.js")
+    script(src="/js/app/models/EventRowCollection.js")
+
+    script(src="/js/app/views/upload-import-data.js")
+    script(src="/js/app/views/remove-random-data.js")
+    script(src="/js/app/views/events-grid-view.js")
+
     script(type="text/javascript").
+        window.ioSID = '#{ioSID}';
         $(document).ready(function () {
             var app = new SportData.Application();
         });

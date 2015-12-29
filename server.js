@@ -1,19 +1,23 @@
 "use strict";
 var http = require('http');
 var koa = require('koa');
+var IO = require('socket.io');
 var routing = require('koa-routing');
 var serve = require('koa-static');
 var session = require('koa-session');
 var Jade = require('koa-jade');
 var logger = require('koa-log4js');
 var Q = require('q');
-var db = require('./sequelize-loader');
+var uuid = require('node-uuid');
+var db = require('./lib/sequelize-loader');
 
 class SportDataServer {
     constructor(config, routes) {
+        var scope = this;
         this._port = config.http.port;
         this._koaApplication = koa();
         this._http = http.createServer(this._koaApplication.callback());
+        this._io = new IO(this._http);
         this._running = false;
 
         var koaApplication = this._koaApplication;
@@ -24,6 +28,27 @@ class SportDataServer {
         // Создаем и подключаем шаблонизатор JADE
         var jade = new Jade(config.jade);
         koaApplication.use(jade.middleware);
+
+        this._io.users = {};
+
+        this._io.on('connection', function(socket) {
+            socket.once('register', function(data) {
+                scope._io.users[data.ioSID] = socket;
+            });
+        });
+
+        // Прикрепляем ссылку на socket.io к контексту
+        koaApplication.use(function *(next) {
+            if (!this.session.start) {
+                this.session.start = true;
+                // запомним в сессию идентификатор для общения через веб-сокеты
+                // его же будем отправлять клиенту
+                this.session.ioSID = uuid.v1();
+            }
+            this.io = scope.io;
+            yield next;
+        });
+
         // Управление выдачей статичного контента
         koaApplication.use(serve(config.http.staticPath));
         // инициализация sequelize, загрузка моделей и связей
@@ -33,9 +58,11 @@ class SportDataServer {
         routes.forEach(function(route) {
             koaApplication.route(route.pattern)[route.method](route.generator);
         });
+    }
 
 
-
+    get io () {
+        return this._io;
     }
 
     get isRunning () {

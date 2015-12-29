@@ -16,6 +16,9 @@ module.exports = function(sequelize, DataTypes) {
                     onDelete: 'SET NULL',
                     onUpdate: 'CASCADE'
                 })
+            },
+            insert: function(data) {
+                return sequelize.query('INSERT INTO locations (caption) VALUES (:caption)', {replacements: data});
             }
         }
     });

@@ -6,7 +6,7 @@ config.db.models = require('./.sequelizerc')['models-path'];
 var routes = require('./api');
 
 // "Класс" - обертка koa
-var Server = require('./lib/sport-data-server').SportDataServer;
+var Server = require('./server');
 
 // Создаем и запускаем новый сервер
 var server = new Server(config, routes);
