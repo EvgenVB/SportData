@@ -19,7 +19,7 @@ window.SportData.views.EventsGridView = Backbone.View.extend({
         this.updateData();
     },
     onDataLoaded: function(){
-        var scope = this, lastEventStamp = 0, pagesCount = this.collection.rowsCount/10;
+        var scope = this, lastEventStamp = 0, pagesCount = Math.floor(this.collection.rowsCount/10)+1;
 
         if (!this.lastCount != this.collection.rowsCount) {
 
