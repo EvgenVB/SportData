@@ -1,4 +1,4 @@
 exports.index = function *(next) {
-    this.render('import-data/index', {ioSID: this.session.ioSID}, true);
+    this.render('import-sport-events-data/index', {ioSID: this.session.ioSID}, true);
     yield next;
 };
