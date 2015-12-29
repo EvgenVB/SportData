@@ -2,10 +2,7 @@
 module.exports = function(sequelize, DataTypes) {
     var Event = sequelize.define('Event', {
         id: {type: DataTypes.INTEGER, primaryKey: true},
-        date: DataTypes.DATE,
-        randomValue: {
-            type: DataTypes.BIGINT,
-            field: 'random_value'}
+        date: DataTypes.DATE
     }, {
         timestamps: false,
         underscored: true,
@@ -32,24 +29,10 @@ module.exports = function(sequelize, DataTypes) {
                 this.hasMany(models.Score, {as: 'scores', foreignKey: 'event_id'});
             },
             insertIgnore: function(data) {
-                data.random_value = getRandomIntegerValue();
-                return sequelize.query('INSERT IGNORE INTO events (id, date, random_value) VALUES (:id, :date, :random_value)', {replacements: data});
+                return sequelize.query('INSERT IGNORE INTO events (id, date) VALUES (:id, :date)', {replacements: data});
             },
             removeRandomCount: function *(percentage) {
-                // Можно и быстрее, но не похоже, что эту функцию могут использовать сколько-то раз в секунду
-                var count = yield this.count();
-                // sequelize не желает в метод delete принимать order
-                return yield sequelize.query('DELETE FROM `events` ORDER BY random_value LIMIT ?', {replacements: [Math.floor(count*(percentage/100))]});
-            }
-        },
-        hooks: {
-            beforeCreate: function(event, options) {
-                event.randomValue = getRandomIntegerValue();
-            },
-            beforeBulkCreate: function(records) {
-                for (var i = 0, c = records.length; i < c; i++) {
-                    records[i].randomValue = getRandomIntegerValue();
-                }
+                return yield sequelize.query('CALL `delete_random_events_rows`(?)', {replacements: [percentage], type: sequelize.QueryTypes.SELECT});
             }
         },
         scopes: {
@@ -75,7 +58,3 @@ module.exports = function(sequelize, DataTypes) {
     });
     return Event;
 };
-
-function getRandomIntegerValue() {
-    return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
-}

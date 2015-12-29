@@ -4,20 +4,23 @@
     "password": "root",
     "database": "sport_data_dev",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "multipleStatements": true
   },
   "test": {
     "username": "root",
     "password": "root",
     "database": "sport_data_test",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "multipleStatements": true
   },
   "production": {
     "username": "root",
     "password": "root",
     "database": "sport_data",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "multipleStatements": true
   }
 }

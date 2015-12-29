@@ -2,28 +2,9 @@ var url = require('url');
 
 /* удаляет указанный процент случайных записей спортивных событий
  принимает GET параметр percentage
-
- Не знаю насколько честно по отношению к заданию было
- делегировать определение случайного числа на процесс создания записи,
- может подразумевалось что-то другое?
-
- Я знаю еще о вариантах, когда определение случайной записи происходит в момент удаления:
- 1. Банальный и медленный
- DELETE FROM events ORDER BY RAND() LIMIT ...
-
- 2. Быстро выбирает id одной случайной записи
- SELECT main.id
-    FROM events AS main JOIN
-        (SELECT (RAND() *
-            (SELECT MAX(id) FROM events)) AS id)
-        AS sub
-    WHERE main.id >= sub.id
-    ORDER BY main.id ASC
-    LIMIT 1;
-
-   соответственно цикл на AS или хранимая процедура с циклом на DB
-
+ Вызывает хранимую процедуру delete_random_events_rows(percentage)
  */
+
 exports.removeRandomData = function *(next) {
     //TODO: в middleware обработку ошибок
     try {//боже, храни генераторы
@@ -31,8 +12,12 @@ exports.removeRandomData = function *(next) {
         var params = url.parse(this.request.url, true).query;
         var percentage = parseInt(params.percentage, 10) || 0;
         var result = yield this.db.Event.removeRandomCount(percentage);
-        if (result.length > 0 && result[0].affectedRows) {
-            this.body = {deleted: result[0].affectedRows};
+        var rows = result[0];
+        console.log(rows['0'].deleted);
+        if (rows['0'] && rows['0'].deleted > 0) {
+            this.body = {deleted: rows['0'].deleted};
+        } else {
+            this.body = {deleted: 0};
         }
     } catch (error) {
         this.status = error.status || 500;
